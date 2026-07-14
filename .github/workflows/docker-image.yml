@@ -34,24 +34,27 @@ jobs:
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        NEW_VERSION: ${{ steps.versioning.outputs.version }}
+
       run: |
         echo "Starting login..."
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-        echo "New version: $NEW_VERSION!"
         echo "Finishing login..."
 
-    # - name: Build Docker Image
-    #   run: |
-    #     echo "Building the docker image"
-    #     docker build -t jaimecamargo/docker-graphql:0.0.2 .
-    #     docker build -t jaimecamargo/docker-graphql:latest .
+    - name: Build Docker Image
+      env:
+        VERSION: ${{ steps.versioning.outputs.version }}
+      run: |
+        echo "Building the docker image"
+        docker build -t jaimecamargo/docker-graphql:$VERSION .
+        docker build -t jaimecamargo/docker-graphql:latest .
 
-    # - name: Push Docker Image
-    #   run: |
-    #     echo "Pushing the docker image"
-    #     docker push jaimecamargo/docker-graphql:0.0.2
-    #     docker push jaimecamargo/docker-graphql:latest
+    - name: Push Docker Image
+      env:
+        VERSION: ${{ steps.versioning.outputs.version }}
+      run: |
+        echo "Pushing the docker image"
+        docker push jaimecamargo/docker-graphql:$VERSION
+        docker push jaimecamargo/docker-graphql:latest
 
     # - name: Build the Docker image
     #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
